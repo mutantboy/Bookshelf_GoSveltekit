@@ -2,15 +2,22 @@ package main
 
 import (
 	"Backend/db"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/gin-gonic/gin"
+	_ "github.com/joho/godotenv"
 	"net/http"
+	"os"
 )
 
 func main() {
+	fmt.Println(os.Getenv("DB_URL"))
 	router := gin.Default()
 	router.GET("/books", GetBooksHTTP)
-	router.Run("localhost:6969")
+
+	if err := router.Run("localhost:6969"); err != nil {
+		panic(err)
+	}
 
 }
 

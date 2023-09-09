@@ -5,8 +5,10 @@ import (
 	_ "database/sql"
 	_ "fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 	"log"
 	_ "log"
+	"os"
 )
 
 type Book struct {
@@ -18,31 +20,26 @@ type Book struct {
 	Description string `json:"description"`
 }
 
-func Init() {
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3307)/bookshelf")
+var db *sql.DB
+var err error
+
+func init() {
+
+	//load env variables
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Could not load env variables")
+	}
+
+	db, err = sql.Open("mysql", os.Getenv("DB_URL"))
 	if err != nil {
 		panic(err.Error())
 	}
-	defer func(db *sql.DB) {
-		err := db.Close()
-		if err != nil {
-			panic(err.Error())
-		}
-	}(db)
 
 }
 
 func GetAllBooks() ([]Book, error) {
 
 	var books []Book
-
-	db, _ := sql.Open("mysql", "root:root@tcp(127.0.0.1:3307)/bookshelf")
-	defer func(db *sql.DB) {
-		err := db.Close()
-		if err != nil {
-			log.Fatal(err)
-		}
-	}(db)
 
 	res, _ := db.Query("SELECT * FROM books")
 
